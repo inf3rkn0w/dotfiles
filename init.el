@@ -109,16 +109,6 @@
   :config
   (setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
 
-;; NOTE: Spotify added ~10 seconds load time due to httpd server
-;;(add-to-list 'load-path "~/.emacs.d/elpa/spotify.el-master")
-;;(require 'spotify) ;; Requires 'simple-httpd'
-
-;; Settings
-;;(setq spotify-oauth2-client-id "08d6c85118ae458eb0daef92e72db840")
-;;(setq spotify-oauth2-client-secret "722fbe924e0b44d392cbb17b13ebcfc7")
-;;(define-key spotify-mode-map (kbd "C-c .") 'spotify-command-map)
-;; (setq spotify-transport 'connect)
-
 (use-package ivy-rich
   :init
   (ivy-rich-mode 1))
