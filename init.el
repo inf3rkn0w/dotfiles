@@ -180,8 +180,7 @@
 ;;  (cust/leader-keys
 ;;   "t" '(counsel-load-theme :which-key "choose theme")))
 			  
-(use-package magit
-  :commands (magit-status magit-get-current-branch))
+(use-package magit)
 
 
 
@@ -211,7 +210,8 @@
   :ensure t)
   
 (use-package ledger-mode
-  :ensure t)
+  :ensure t
+  :mode ("\\.journal\\'" . ledger-mode))
 
 ;; Projectile
 ;; This was V1
@@ -233,6 +233,7 @@
   (setq projectile-switch-project-action #'projectile-dired))
 
 (use-package counsel-projectile
+  :config (counsel-projectile-mode)
   :after projectile)
 
 
