@@ -126,7 +126,6 @@
 ;; Turn on indentation and auto-fill mode for Org files
 (defun cust/org-mode-setup ()
   (org-indent-mode)
-  (variable-pitch-mode 1)
   (auto-fill-mode 0)
   (visual-line-mode 1)
   (diminish org-indent-mode))
@@ -135,42 +134,43 @@
   :defer t
   :hook (org-mode . cust/org-mode-setup)
   :config
-  (setq org-ellipsis " ▾"
-	org-hide-emphasis-markers t
-	org-src-fontify-natively t
-	org-src-tab-acts-natively t
-	org-edit-src-content-intentation 0
-	org-hide-block-startup nil
-	org-src-preserve-indentation nil
-	org-startup-folded 'content
-	org-cycle-separator-lines 2)
+  (setq org-ellipsis " ▾")
+;	org-hide-emphasis-markers t
+;	org-src-fontify-natively t
+;	org-src-tab-acts-natively t
+;	org-edit-src-content-intentation 0
+;	org-hide-block-startup nil
+;	org-src-preserve-indentation nil
+;	org-startup-folded 'content
+;	org-cycle-separator-lines 2)
 (use-package org-bullets
 ;;  :if (not dw/is-termux)
   :after org
-  :hook (org-mode . org-bullets-mode)
-  :custom
-  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●"))))
+  :hook (org-mode . org-bullets-mode)))
+  ;:custom
+;  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●"))))
 
 ;; Make sure org-indent face is available
 (require 'org-indent)
 
 ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+;(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+;(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+;(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+;(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+;(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+;(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+;(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
 
-(set-face-attribute 'org-level-1 nil :height 1.4)
-(set-face-attribute 'org-level-2 nil :height 1.2)
-(set-face-attribute 'org-level-3 nil :font "Cantarell" :weight 'regular :height 1.1)
-(set-face-attribute 'org-level-4 nil :font "Cantarell" :weight 'regular :height 1.05)
-;;(set-face-attribute 'org-level-5 nil :font "Cantarell" :weight 'regular :height 1)
-;;(set-face-attribute 'org-level-6 nil :font "Cantarell" :weight 'regular :height 1)
-;;(set-face-attribute 'org-level-7 nil :font "Cantarell" :weight 'regular :height 1)
-;;(set-face-attribute 'org-level-8 nil :font "Cantarell" :weight 'regular :height 1)
+(dolist (face '((org-level-1 . 1.4)
+		(org-level-2 . 1.2)
+		(org-level-3 . 1.1)
+		(org-level-4 . 1.05)
+		(org-level-5 . 1.0)
+		(org-level-6 . 1.0)
+		(org-level-7 . 1.0)
+		(org-level-8 . 1.0)))
+  (set-face-attribute (car face) nil :font "Fira Code Retina"  :weight 'regular :height (cdr face)))
 
 ;;(use-package general
 ;;  :config
@@ -237,79 +237,8 @@
   :after projectile)
 
 
-
-
 ;; Look up Hydra for font scaling
 
-
-;; ;; Dired Project Explorer
-;; (use-package dired-subtree
-;;   :demand
-;;   :bind
-;;   (:map dired-mode-map
-;;     ("<enter>" . cust/dwim-toggle-or-open)
-;;     ("<return>" . cust/dwim-toggle-or-open)
-;;     ("<tab>" . cust/dwim-toggle-or-open)
-;;     ("<down-mouse-1>" . cust/mouse-dwim-to-toggle-or-open))
-;;   :config
-;;   (progn
-;;     ;; Function to customize the line prefixes (I simply indent the lines a bit)
-;;     (setq dired-subtree-line-prefix (lambda (depth) (make-string (* 2 depth) ?\s)))
-;;     (setq dired-subtree-use-backgrounds nil)))
-
-;; (defun cust/dwim-toggle-or-open ()
-;;   "Toggle subtree or open the file."
-;;   (interactive)
-;;   (if (file-directory-p (dired-get-file-for-visit))
-;;       (progn
-;;     (dired-subtree-toggle)
-;;     (revert-buffer))
-;;     (dired-find-file)))
-
-;; (defun cust/mouse-dwim-to-toggle-or-open (event)
-;;   "Toggle subtree or the open file on mouse-click in dired."
-;;   (interactive "e")
-;;   (let* ((window (posn-window (event-end event)))
-;;      (buffer (window-buffer window))
-;;      (pos (posn-point (event-end event))))
-;;     (progn
-;;       (with-current-buffer buffer
-;;     (goto-char pos)
-;;     (cust/dwim-toggle-or-open)))))
-
-;; (use-package dired
-;;   :ensure nil
-;;   :config
-;;   (progn
-;;     (setq insert-directory-program "/usr/bin/ls")
-;;     (setq dired-listing-switches "-lXGh --group-directories-first")
-;;     (add-hook 'dired-mode-hook 'dired-omit-mode)
-;;     (add-hook 'dired-mode-hook 'dired-hide-details-mode)))
-
-;; (defun cust/toggle-project-explorer ()
-;;   "Toggle the project explorer window."
-;;   (interactive)
-;;   (let* ((buffer (dired-noselect (projectile-project-root)))
-;;     (window (get-buffer-window buffer)))
-;;     (if window
-;;     (cust/hide-project-explorer)
-;;       (cust/show-project-explorer))))
-
-;; (defun cust/show-project-explorer ()
-;;   "Project dired buffer on the side of the frame.
-;; Shows the projectile root folder using dired on the left side of
-;; the frame and makes it a dedicated window for that buffer."
-;;   (let ((buffer (dired-noselect (projectile-project-root))))
-;;     (progn
-;;       (display-buffer-in-side-window buffer '((side . left) (window-width . 0.2)))
-;;       (set-window-dedicated-p (get-buffer-window buffer) t))))
-
-;; (defun cust/hide-project-explorer ()
-;;   "Hide the project-explorer window."
-;;   (let ((buffer (dired-noselect (projectile-project-root))))
-;;     (progn
-;;       (delete-window (get-buffer-window buffer))
-;;       (kill-buffer buffer))))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
