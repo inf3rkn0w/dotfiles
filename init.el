@@ -172,6 +172,14 @@
 		(org-level-8 . 1.0)))
   (set-face-attribute (car face) nil :font "Fira Code Retina"  :weight 'regular :height (cdr face)))
 
+;; TODO: Determine what to do with this path
+					;(load "~/proj/dotfiles/custom.el")
+(use-package ox-reveal
+  :config
+					;  (setq org-reveal-root "file:///home/aaron/proj/reveal.js")
+  (setq org-reveal-root (concat "file://" (expand-file-name "~") "/proj/reveal.js"))
+  (setq org-reveal-title-slide nil))
+
 ;;(use-package general
 ;;  :config
 ;;  (general-create-definer cust/leader-keys

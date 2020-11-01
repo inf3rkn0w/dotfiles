@@ -1,6 +1,7 @@
 #!/bin/bash
 
 INIT_EL=~/.emacs.d/init.el
+EL_FILES=("init.el" "custom.el")
 HAS_INIT_FILE=1
 
 if [ ! -f "./init.el" ]; then
