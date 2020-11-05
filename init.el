@@ -47,6 +47,7 @@
 (menu-bar-mode -1)
 (tooltip-mode -1)
 (set-fringe-mode 10)
+
 ;; Exempt line numbers modes
 (dolist (mode '(org-mode-hook
 		term-mode-hook
@@ -132,7 +133,8 @@
 
 (use-package org
   :defer t
-  :bind (("C-c a" . custom-org-agenda))
+  :bind (("C-c a" . custom-org-agenda)
+	 ("C-c s" . org-agenda))
   :hook (org-mode . cust/org-mode-setup)
   :config
   (defun custom-org-agenda ()
@@ -157,11 +159,14 @@
 ;; Make sure org-indent face is available
 (require 'org-indent)
 
-(setq org-agenda-files '("~/proj/orgfiles"))
+					; TODO Note: Figure out how to make this cover all files under orgfiles
+(setq org-agenda-files (directory-files-recursively "~/proj/orgfiles" ".org"))
+
 
 ;; TODO keywords.
 (setq org-todo-keywords
-  '((sequence "TODO(t)" "NEXT(n)" "PROG(p)" "INTR(i)" "|" "DONE(d)")))
+      '((sequence "TODO(t)" "NEXT(n)" "PROG(p)" "INTR(i)" "|" "DONE(d)")
+	(sequence "TASK(k)" "|" "DONE(d)")))
 
 ;; Show the daily agenda by default.
 (setq org-agenda-span '3)
@@ -183,8 +188,12 @@
       (todo "PROG")
       (todo "NEXT")))
       ("n" "Global Tasks"
-	 ((agenda "")
-	 (alltodo "")))))
+	 ((agenda "" ((org-agenda-span 7)))
+	  (alltodo "")))
+      ("b" "Tasks Owned by Others"
+       ((todo "TASK")))))
+;       (agenda "" ((org-agenda-span 1)))))))
+
 
 ; (run-with-idle-timer 120 t (lambda () (org-agenda nil "c")))
 
