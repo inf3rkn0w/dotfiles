@@ -132,8 +132,12 @@
 
 (use-package org
   :defer t
+  :bind (("C-c a" . custom-org-agenda))
   :hook (org-mode . cust/org-mode-setup)
   :config
+  (defun custom-org-agenda ()
+    (interactive)
+    (org-agenda nil "c"))
   (setq org-ellipsis " ▾")
 ;	org-hide-emphasis-markers t
 ;	org-src-fontify-natively t
@@ -152,6 +156,37 @@
 
 ;; Make sure org-indent face is available
 (require 'org-indent)
+
+(setq org-agenda-files '("~/proj/orgfiles"))
+
+;; TODO keywords.
+(setq org-todo-keywords
+  '((sequence "TODO(t)" "NEXT(n)" "PROG(p)" "INTR(i)" "|" "DONE(d)")))
+
+;; Show the daily agenda by default.
+(setq org-agenda-span 'day)
+
+;; Hide tasks that are scheduled in the future.
+(setq org-agenda-todo-ignore-scheduled 'future)
+
+;; Hide the deadline prewarning prior to scheduled date.
+(setq org-agenda-skip-deadline-prewarning-if-scheduled 'pre-scheduled)
+
+;; Customized view for the daily workflow.
+(setq org-agenda-custom-commands
+      '(("c" "Agenda / INTR / PROG / NEXT"
+	 ((tags "PRIORITY=\"A\""
+		((org-agenda-skip-function '(org-agenda-skip-entry-if 'done))
+                 (org-agenda-overriding-header "High-priority unfinished tasks:")))
+     (agenda "")
+     (todo "INTR")
+      (todo "PROG")
+      (todo "NEXT")))
+      ("n" "Global Tasks"
+	 ((agenda "")
+	 (alltodo "")))))
+
+; (run-with-idle-timer 120 t (lambda () (org-agenda nil "c")))
 
 ;; Ensure that anything that should be fixed-pitch in Org files appears that way
 ;(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)

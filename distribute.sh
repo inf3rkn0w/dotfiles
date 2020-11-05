@@ -1,7 +1,7 @@
 #!/bin/bash
 
 INIT_EL=~/.emacs.d/init.el
-EL_FILES=("init.el" "custom.el")
+#EL_FILES=("init.el" "custom.el")
 HAS_INIT_FILE=1
 
 if [ ! -f "./init.el" ]; then
@@ -26,5 +26,7 @@ if [ $HAS_INIT_FILE -eq 1 ]; then
     echo "Distributing init.el file."
     cp "./init.el" "$INIT_EL"
 fi
+
+diff "$INIT_EL" "$INIT_EL.old"
 
 # TODO: Add .bashrc movement here and other dotfiles
