@@ -164,10 +164,10 @@
   '((sequence "TODO(t)" "NEXT(n)" "PROG(p)" "INTR(i)" "|" "DONE(d)")))
 
 ;; Show the daily agenda by default.
-(setq org-agenda-span 'day)
+(setq org-agenda-span '3)
 
 ;; Hide tasks that are scheduled in the future.
-(setq org-agenda-todo-ignore-scheduled 'future)
+;(setq org-agenda-todo-ignore-scheduled nil)
 
 ;; Hide the deadline prewarning prior to scheduled date.
 (setq org-agenda-skip-deadline-prewarning-if-scheduled 'pre-scheduled)
@@ -255,6 +255,14 @@
 (use-package ledger-mode
   :ensure t
   :mode ("\\.journal\\'" . ledger-mode))
+
+;(defun cust/pdf-view-mode-hook ()
+;            (lambda () (display-line-numbers-mode nil))
+;            :append :local)
+
+(use-package pdf-tools
+  :mode ("\\.pdf\\'" . pdf-view-mode))
+;  :hook (pdf-view-mode . cust/pdf-view-mode-hook))
 
 ;; Projectile
 ;; This was V1
