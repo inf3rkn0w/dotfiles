@@ -80,7 +80,7 @@
     :ensure t
     :init (doom-modeline-mode 1)
     :custom (doom-modeline-height 10))
-(load-theme 'doom-acario-dark t)
+(load-theme 'doom-ephemeral t)
 
 ;; Ivy
 (use-package ivy
@@ -171,8 +171,13 @@
 ;; Show the daily agenda by default.
 (setq org-agenda-span '3)
 
-;; Hide tasks that are scheduled in the future.
-;(setq org-agenda-todo-ignore-scheduled nil)
+;; Hide tasks that are scheduled in the future
+					;(setq org-agenda-todo-ignore-scheduled nil)
+
+(setq org-agenda-skip-scheduled-if-done t)
+(setq org-agenda-start-with-log-mode t)
+(setq org-log-done 'time)
+(setq org-log-into-drawer t)
 
 ;; Hide the deadline prewarning prior to scheduled date.
 (setq org-agenda-skip-deadline-prewarning-if-scheduled 'pre-scheduled)
