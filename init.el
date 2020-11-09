@@ -185,9 +185,9 @@
 ;; Customized view for the daily workflow.
 (setq org-agenda-custom-commands
       '(("c" "Agenda / INTR / PROG / NEXT"
-	 ((tags "PRIORITY=\"A\""
-		((org-agenda-skip-function '(org-agenda-skip-entry-if 'done))
-                 (org-agenda-overriding-header "High-priority unfinished tasks:")))
+	 ((tags-todo "PRIORITY={A}"
+		((org-agenda-overriding-header "High-priority unfinished tasks:")
+		 (org-agenda-skip-function '(org-agenda-skip-entry-if 'done))))
      (agenda "")
      (todo "INTR")
       (todo "PROG")
