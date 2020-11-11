@@ -159,8 +159,7 @@
 ;; Make sure org-indent face is available
 (require 'org-indent)
 
-					; TODO Note: Figure out how to make this cover all files under orgfiles
-(setq org-agenda-files (directory-files-recursively "~/proj/orgfiles" ".org"))
+(setq org-agenda-files (directory-files-recursively "~/proj/orgfiles" "org"))
 
 
 ;; TODO keywords.
