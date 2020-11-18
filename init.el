@@ -39,7 +39,7 @@
 
 ;; Window setup
 (use-package desktop)
-;;(desktop-save-mode 1)
+(desktop-save-mode 1)
 (scroll-bar-mode -1)
 (column-number-mode)
 (global-display-line-numbers-mode 1)
@@ -80,7 +80,7 @@
     :ensure t
     :init (doom-modeline-mode 1)
     :custom (doom-modeline-height 10))
-(load-theme 'doom-ephemeral t)
+(load-theme 'doom-acario-light t)
 
 ;; Ivy
 (use-package ivy
@@ -210,15 +210,15 @@
 ;(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
 ;(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
 
-(dolist (face '((org-level-1 . 1.4)
-		(org-level-2 . 1.2)
-		(org-level-3 . 1.1)
-		(org-level-4 . 1.05)
-		(org-level-5 . 1.0)
-		(org-level-6 . 1.0)
-		(org-level-7 . 1.0)
-		(org-level-8 . 1.0)))
-  (set-face-attribute (car face) nil :font "Fira Code Retina"  :weight 'regular :height (cdr face)))
+;; (dolist (face '((org-level-1 . 1.4)
+;; 		(org-level-2 . 1.2)
+;; 		(org-level-3 . 1.1)
+;; 		(org-level-4 . 1.05)
+;; 		(org-level-5 . 1.0)
+;; 		(org-level-6 . 1.0)
+;; 		(org-level-7 . 1.0)
+;; 		(org-level-8 . 1.0)))
+;;   (set-face-attribute (car face) nil :font "Fira Code Retina"  :weight 'regular :height (cdr face)))
 
 ;; TODO: Determine what to do with this path
 					;(load "~/proj/dotfiles/custom.el")
