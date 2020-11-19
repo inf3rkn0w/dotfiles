@@ -1,0 +1,30 @@
+
+
+* Arch Install
+Note that UEFI (GPT) should be set up if possible. This guide does not work on BIOS (MBR) devices.
+
+** Check your boot mode
+
+
+
+#+begin_src python :results output
+
+def greeting():
+    return "Hello!"
+
+print greeting()
+
+#+end_src
+
+#+RESULTS:
+
+#+begin_src emacs-lisp :results value
+
+(message "Hello!")
+
+#+end_src
+
+#+RESULTS:
+: Hello!
+
+
