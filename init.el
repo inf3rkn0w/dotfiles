@@ -51,6 +51,8 @@
       backup-directory-alist `(("." . ,(expand-file-name "backups" user-emacs-directory)))
       auto-save-list-file-prefix (expand-file-name "auto-save-list/.saves-" user-emacs-directory))
 
+(load-theme 'doom-dracula t)
+
 (use-package ivy
   :diminish
   :bind (("C-s" . swiper)
@@ -105,7 +107,6 @@
     :ensure t
     :init (doom-modeline-mode 1)
     :custom (doom-modeline-height 10))
-(load-theme 'doom-acario-light t)
 
 ;; Turn on indentation and auto-fill mode for Org files
 (defun cust/org-mode-setup ()
@@ -188,7 +189,8 @@ p  :config
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((emacs-lisp . t)
-   (python . t)))
+   (python . t)
+   (shell . t)))
 
 (setq org-confirm-babel-evaluate nil)
 
@@ -240,50 +242,11 @@ p  :config
   :config (counsel-projectile-mode)
   :after projectile)
 
-(defun efs/exwm-update-class ()
-  (exwm-workspace-rename-buffer exwm-class-name))
+(setq efs/exwm-enabled (and (eq window-system 'x)
+                            (seq-contains-p command-line-args "--use-exwm")))
 
-(use-package exwm
-;  :init
-;  (require 'exwm-systemtray)
-;  (exwm-systemtray-enable) 
-  :config
-  ;; Set the default number of workspaces
-  (setq exwm-workspace-number 5)
-  (setq exwm-input-prefix-keys
-	'(?\C-x
-	  ?\C-u
-	  ?\C-h
-	  ?\M-x
-	  ?\M-`
-	  ?\M-&
-	  ?\M-:
-	  ?\C-\M-j
-	  ?\C-\ ))
-  (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
-  (setq exwm-input-global-keys
-	`(
-	  ([?\s-r] . exwm-reset)
-	  ([s-left] . windmove-left)
-	  ([s-right] . windmove-right)
-	  ([s-up] . windmove-up)
-	  ([s-down] . windmove-down)
-        ([s-f] . exwm-layout-toggle-fullscreen)
-
-	  ([?\s-&] . (lambda (command)
-		       (interactive (list (read-shell-command "$ ")))
-		       (start-process-shell-command command nill command)))
-
-	  ([?\s-w] . exwm-workspace-switch)
-
-	  ,@(mapcar (lambda (i)
-		      `(,(kbd (format "s-%d" i)) .
-			(lambda ()
-			  (interactive)
-			  (exwm-workspace-switch-create ,i))))
-		    (number-sequence 0 9))))
-  
-  (exwm-enable))
+(when efs/exwm-enabled
+  (load-file "~/.emacs.d/exwm.el"))
 
 ;; Use this with M-x global-command-log-mode and clm/toggle-command-log-mode
 (use-package command-log-mode)

@@ -1,30 +1,300 @@
-
-
 * Arch Install
 Note that UEFI (GPT) should be set up if possible. This guide does not work on BIOS (MBR) devices.
 
 ** Check your boot mode
+If this returns a list of values, you are in UEFI mode and will need GPT tables
 
+#+begin_src shell
+ls /sys/frmware/efi/efivars
+#+end_src
 
+** Install Network Setup
+*** Determine if you have a network interface
+#+begin_src shell
+ip link
+#+end_src
 
-#+begin_src python :results output
+*** See if you have connectivity
+#+begin_src shell
+ping www.google.com
+#+end_src
 
-def greeting():
-    return "Hello!"
+*** If no connectivity and you need wifi during install...
+#+begin_src shell
+iwctl
+device list
+station wlan0 get-networks # Note wlan0 can change
+station wlan0 connect {SSID} # SSID is the network endpoint ID
+# Enter your WIFI password next
+#+end_src
 
-print greeting()
+** Setup Timezone
+Set up clock appropriately. Important for proper timekeeping.
+#+begin_src shell
+timedatectl set-ntp true
+timedatectl # Returns given time for verification
+#+end_src
+
+** Partition Drives with =fdisk=
+*** Peek at hard disks available
+#+begin_src shell
+fdisk -l # Results will be called /dev/sda below
+#+end_src
+
+*** Set up partition tables
+#+begin_src shell
+fdisk /dev/sda
+
+Enter commands below:
+--------------------
+g -> create GPT partition table
+n -> add partition
+  1 -> EFI partition number (/dev/sda1)
+  default -> This is for first sector, recommend 
+             leaving 2MB space at beginning
+  +550M -> Size of EFI partition
+n
+  2 -> Swap partition number (/dev/sda2)
+  default
+  +10G -> Recommend double RAM, but for Arch is
+          it really needed?
+n
+  3 -> Root partition number (/dev/sda3)
+  default
+  +200G, or default (fill drive)
+t -> Change partition type
+  1
+  1 -> EFI system under L list
+t
+  2
+  19 -> Linux swap
+w -> write to disk and exit
+#+end_src
+
+*** Format partitions
+#+begin_src shell
+mkfs.fat -F32 /dev/sda1
+
+mkswap /dev/sda2
+swapon /dev/sda2
+
+mkfs.ext4 /dev/sda3
+#+end_src
+
+** Install base system
+*** Pacstrap (Install base components)
+#+begin_src shell
+mount /dev/sda3 /mnt
+pacstrap /mnt base linux linux-firmware emacs sudo git networkmanager
+#+end_src
+
+*** Set up filesystem table in root
+#+begin_src shell
+genfstab -U /mnt >> /mnt/etc/fstab
+#+end_src
+
+** Chroot
+*** Execute chroot
+#+begin_src shell
+arch-chroot /mnt
+#+end_src
+
+*** Set timezone
+Creates symlink from base system timezone to root
+#+begin_src shell
+ln -sf /usr/share/zoneinfo/America/Chicago /etc/localtime
+#+end_src
+
+*** Set hw clock
+#+begin_src shell
+hwclock --systolhc
+#+end_src
+
+*** Generate locale
+#+begin_src shell
+emacs /etc/locale.gen
+-----------
+Uncomment en_US.UTF.8 line
+exit
+
+locale-gen
+
+touch /etc/locale.conf   # May already be created
+emacs /etc/locale.conf
+-----------
+Add LANG=en_US.UTF-8
+exit
+#+end_src
+
+*** Hostname
+#+begin_src shell
+emacs /etc/hostname
+-----------
+Enter whatever host name of computer here
+exit
+
+emacs /etc/hosts
+-----------
+Add the following:
+127.0.0.1    localhost
+::1          localhost
+127.0.1.1    {hostname}.localdomain    {hostname}
+exit
+#+end_src
+
+*** User setup
+#+begin_src shell
+passwd   # Enter root password
+useradd -m {user}
+passwd {user}  # Enter user password
+usermod -aG wheel,audio,video,optical,storage (vbox for VMs) {user}
+EDITOR=emacs visudo
+-----------
+Uncomment %wheel All=(ALL) ALL
+exit
+#+end_src
+
+*** Grub Bootloader
+#+begin_src shell
+pacman -S grub efibootmgr dosfstools os-prober mtools
+mkdir /boot/EFI
+mount /dev/sda1 /boot/EFI
+grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
+grub-mkconfig -o /boot/grub/grub.cfg
 
 #+end_src
 
-#+RESULTS:
+*** Enable networking
+Create symlink with:
+#+begin_src shell
+systemctl enable NetworkManager
+#+end_src
 
-#+begin_src emacs-lisp :results value
+*** Exit after install
+#+begin_src shell
+umount -l /mnt
+reboot (shutdown if VM)
+# Note: Once rebooting is done, remove install media
+#+end_src
 
-(message "Hello!")
+* Window Managers
+** EXWM
+*** Install dependencies
+#+begin_src shell
+pacman -S xorg-xinit   # Note: May need to install xorg too?
+#+end_src
+
+*** Set up xinitrc
+**** Manual
+#+begin_src shell
+cp /etc/X11/xinit/xinitrc ~/.xinitrc
+
+emacs ~/.xinitrc
+-----------
+Comment out bottom exec line
+Add "exec emacs --use-exwm"
+#+end_src
+
+OR if you don't want to do it manually, tangle this:
+
+**** Automatic
+#+begin_src shell :tangle ~/.xinitrc
+#!/bin/sh
+
+userresources=$HOME/.Xresources
+usermodmap=$HOME/.Xmodmap
+sysresources=/etc/X11/xinit/.Xresources
+sysmodmap=/etc/X11/xinit/.Xmodmap
+
+# merge in defaults and keymaps
+
+if [ -f $sysresources ]; then
+    xrdb -merge $sysresources
+fi
+
+if [ -f $sysmodmap ]; then
+    xmodmap $sysmodmap
+fi
+
+if [ -f "$userresources" ]; then
+    xrdb -merge "$userresources"
+fi
+
+if [ -f "$usermodmap" ]; then
+    xmodmap "$usermodmap"
+fi
+
+# start some nice programs
+
+if [ -d /etc/X11/xinit/xinitrc.d ] ; then
+ for f in /etc/X11/xinit/xinitrc.d/?*.sh ; do
+  [ -x "$f" ] && . "$f"
+ done
+ unset f
+fi
+
+twm &
+xclock -geometry 50x50-1+1 &
+xterm -geometry 80x50+494+51 &
+xterm -geometry 80x20+494-0 &
+# exec xterm -geometry 80x66+0+0 -name login
+sh $HOME/.config/polybar/launch.sh
+exec dbus-launch --exit-with-session emacs -mm --debug-init --use-exwm
 
 #+end_src
 
-#+RESULTS:
-: Hello!
+*** Set up xserverrc
+**** Manual
+#+begin_src shell
+emacs ~/.xserverrc
+-----------
+Append vt$XDG_VTNR to the line showing exec
+#+end_src
 
+OR if you don't want to do it manually, tangle this:
+**** Automatic
+#+begin_src shell :tangle ~/.xserverrc
+#!/bin/sh
+exec /usr/bin/X -nolisten tcp "$@" vt$XDG_VTNR
+#+end_src
+
+*** Launch EXWM
+#+begin_src shell
+# Note: This can be appended to alias for better modification later
+xinit -- :1
+#+end_src
+
+* After-install optimizations
+** Audio
+*** Packages
+#+begin_src shell
+pacman -S alsa-utils asoundconf
+#+end_src
+
+*** Configuring Sound
+#+begin_src shell
+asoundconf list # Note value returned was PCH
+asoundconf set-default-card PCH
+#+end_src
+
+* Polybar
+
+** Auto execute script
+NOTE: Taken from https://github.com/polybar/polybar/wiki
+
+#+begin_src shell :tangle ~/.config/polybar/launch.sh :mkdirp yes
+#!/usr/bin/env bash
+
+# Terminate already running bar instances
+killall -q polybar
+# If all your bars have ipc enabled, you can also use
+# polybar-msg cmd quit
+echo "---" | tee -a /tmp/polybar1.log /tmp/polybar2.log
+polybar bar1 >>/tmp/polybar1.log 2>&1 & disown
+polybar bar2 >>/tmp/polybar2.log 2>&1 & disown
+
+echo "Bars launched..."
+#+end_src
+
+** 
 

@@ -2,7 +2,6 @@
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el
 
 * General Setup
-
 ** Package Repos
 
 #+begin_src emacs-lisp
@@ -74,6 +73,11 @@
       backup-directory-alist `(("." . ,(expand-file-name "backups" user-emacs-directory)))
       auto-save-list-file-prefix (expand-file-name "auto-save-list/.saves-" user-emacs-directory))
 
+#+end_src
+
+** Theme
+#+begin_src emacs-lisp
+(load-theme 'doom-dracula t)
 #+end_src
 
 * Searching
@@ -154,9 +158,7 @@
     :ensure t
     :init (doom-modeline-mode 1)
     :custom (doom-modeline-height 10))
-(load-theme 'doom-acario-light t)
 #+end_src
-
 
 * Org Mode
 ** Base Setup
@@ -253,9 +255,11 @@ p  :config
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((emacs-lisp . t)
-   (python . t)))
+   (python . t)
+   (shell . t)))
 
 #+end_src
+
 
 *** Don't Notify Execution
 #+begin_src emacs-lisp
@@ -339,7 +343,8 @@ p  :config
 #+end_src
 
 * EXWM
-#+begin_src emacs-lisp
+
+#+begin_src emacs-lisp :tangle ./.emacs.d/exwm.el
 (defun efs/exwm-update-class ()
   (exwm-workspace-rename-buffer exwm-class-name))
 
@@ -386,9 +391,18 @@ p  :config
   (exwm-enable))
 #+end_src
 
+#+begin_src emacs-lisp
+(setq efs/exwm-enabled (and (eq window-system 'x)
+                            (seq-contains-p command-line-args "--use-exwm")))
+
+(when efs/exwm-enabled
+  (load-file "~/.emacs.d/exwm.el"))
+#+end_src
+
 * Misc
 ** Command Log Mode
 #+begin_src emacs-lisp
 ;; Use this with M-x global-command-log-mode and clm/toggle-command-log-mode
 (use-package command-log-mode)
 #+end_src
+
