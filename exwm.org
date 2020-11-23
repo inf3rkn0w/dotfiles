@@ -1,0 +1,34 @@
+#+title: EXWM Desktop Environment
+#+PROPERTY: header-args:emacs-lisp :tangle ./.emacs.d/exwm.el
+
+* Window Management
+** Set variables
+*** Home
+#+NAME: HOME
+#+begin_src emacs-lisp
+(expand-file-name "~")
+#+end_src
+
+** EXWM Configuration
+*** Desktop file
+Used for EXWM to tell GDM that it is available as a window manager.
+This will need linked into the =/usr/share/xsessions/EXWM.desktop= file.
+#+begin_src conf :noweb yes :tangle ./.emacs.d/EXWM.desktop
+[Desktop Entry]
+Name=EXWM
+Comment=Emacs Window Manager
+Exec=sh <<HOME()>>/.emacs.d/exwm/start-exwm.sh
+TryExec=sh
+Type=Application
+X-LightDM-DesktopName=exwm
+DesktopNames=exwm
+#+end_src
+
+*** Launch script
+NOTE: Add =nm-applet= and =cbatticon= for system tray
+NOTE: Add =--use-exwm= to exwm-enabled function so we can toggle
+#+begin_src shell :tangle ./scripts/start-exwm.sh
+#!/bin/sh
+
+exec dbus-launch --exit-with-session emacs -mm --debug-init
+#+end_src

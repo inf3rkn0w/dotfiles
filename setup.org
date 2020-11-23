@@ -1,3 +1,6 @@
+#+title: Setup Instructions for Various Workspaces
+#+PROPERTY: header-args:mkdirp yes
+
 * Arch Install
 Note that UEFI (GPT) should be set up if possible. This guide does not work on BIOS (MBR) devices.
 
@@ -177,8 +180,25 @@ reboot (shutdown if VM)
 # Note: Once rebooting is done, remove install media
 #+end_src
 
+* Desktop Managers
+** GDM (Gnome Desktop Manager)
+*** Install gdm
+#+begin_src shell
+pacman -S gdm
+#+end_src
+
+*** Allow GDM on boot
+#+begin_src shell
+systemctl enable gdm.service
+#+end_src
+
+*** Selecting window manager
+1. When prompted to log in, click the bottom left gear
+2. Select EXWM
+3. Authenticate
+
 * Window Managers
-** EXWM
+** EXWM (No desktop manager)
 *** Install dependencies
 #+begin_src shell
 pacman -S xorg-xinit   # Note: May need to install xorg too?
@@ -262,6 +282,35 @@ exec /usr/bin/X -nolisten tcp "$@" vt$XDG_VTNR
 #+begin_src shell
 # Note: This can be appended to alias for better modification later
 xinit -- :1
+#+end_src
+
+** EXWM (With Desktop Manager)
+Note: This is thanks to daviwil @ systemcrafters' videos to interface with the desktop manager.
+*** Desktop file
+Note: Home (~) will need to be replaced with full file path
+#+begin_src conf :tangle ./.emacs.d/EXWM.desktop
+[Desktop Entry]
+Name=EXWM
+Comment=Emacs Window Manager
+Exec=sh ~/proj/dotfiles/scripts/start-exwm.sh
+TryExec=sh
+Type=Application
+X-LightDM-DesktopName=exwm
+DesktopNames=exwm
+#+end_src
+
+*** Launch script
+NOTE: Add =nm-applet= and =cbatticon= for system tray
+NOTE: Add =--use-exwm= to exwm-enabled function so we can toggle
+#+begin_src shell :tangle ./scripts/start-exwm.sh
+#!/bin/sh
+
+exec dbus-launch --exit-with-session emacs -mm --debug-init
+#+end_src
+
+*** Copy to a valid xsession to be picked up by GDM
+#+begin_src shell 
+ln -s ./.emacs.d/EXWM.desktop /usr/share/xsessions/EXWM.desktop
 #+end_src
 
 * After-install optimizations
@@ -367,9 +416,47 @@ exit
 
 Run emacs with above alias =eme=
 
-* Polybar
 
-** Auto execute script
+* Status bars
+** Status bars
+*** EXWM Icons
+**** Network
+***** Install network manager applet
+#+begin_src shell
+sudo pacman -S network-manager-applet
+#+end_src
+
+***** Run Network Manager Applet (One-time)
+#+begin_src shell
+nm-applet
+#+end_src
+
+**** Battery
+***** Install cbatticon
+#+begin_src shell
+yay -S cbatticon
+#+end_src
+
+***** Run battery manager (One-time)
+#+begin_src shell
+cbatticon
+#+end_src
+
+** Xmobar
+*** Installing haskell stuff
+#+begin_src shell
+# Install cabal
+sudo pacman -S cabal-install
+
+# TODO: What is 'alex' and why is it needed?
+sudo pacman -S alex
+
+sudo cabal update
+
+#+end_src
+
+** Polybar
+*** Auto execute script
 NOTE: Taken from https://github.com/polybar/polybar/wiki
 
 #+begin_src shell :tangle ~/.config/polybar/launch.sh :mkdirp yes
@@ -386,5 +473,4 @@ polybar bar2 >>/tmp/polybar2.log 2>&1 & disown
 echo "Bars launched..."
 #+end_src
 
-** 
 
