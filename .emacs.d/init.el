@@ -242,8 +242,8 @@ p  :config
   :config (counsel-projectile-mode)
   :after projectile)
 
-(setq efs/exwm-enabled (and (eq window-system 'x)))
-;                            (seq-contains-p command-line-args "--use-exwm")))
+(setq efs/exwm-enabled (and (eq window-system 'x)
+                            (seq-contains-p command-line-args "--use-exwm")))
 
 (when efs/exwm-enabled
   (load-file "~/.emacs.d/exwm.el"))

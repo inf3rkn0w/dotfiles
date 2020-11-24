@@ -342,10 +342,10 @@ p  :config
 #+end_src
 
 * EXWM
-*** Split EXWM config out in Main
+** Split EXWM config out in Main
 #+begin_src emacs-lisp
-(setq efs/exwm-enabled (and (eq window-system 'x)))
-;                            (seq-contains-p command-line-args "--use-exwm")))
+(setq efs/exwm-enabled (and (eq window-system 'x)
+                            (seq-contains-p command-line-args "--use-exwm")))
 
 (when efs/exwm-enabled
   (load-file "~/.emacs.d/exwm.el"))
@@ -357,4 +357,5 @@ p  :config
 ;; Use this with M-x global-command-log-mode and clm/toggle-command-log-mode
 (use-package command-log-mode)
 #+end_src
+
 
