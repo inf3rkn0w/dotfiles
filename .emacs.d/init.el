@@ -1,11 +1,3 @@
-#+title Emacs Scratch Config
-#+PROPERTY: header-args:emacs-lisp :tangle ./.emacs.d/init.el :mkdirp yes
-
-* General Setup
-** Package Repos
-
-#+begin_src emacs-lisp
-
 (require 'package)
 (setq package-archives '(("elpa" . "https://elpa.gnu.org/packages/")
 			 ("melpa" . "https://melpa.org/packages/")
@@ -21,11 +13,6 @@
 (require 'use-package)
 (setq use-package-always-ensure t) ; Auto-install packages
 
-#+end_src
-
-** Window and Environment
-
-#+begin_src emacs-lisp
 (setq inhibit-startup-message t)
 (setq inhibit-scratch-message nil) ;; Change with initial-scratch-message
 
@@ -46,16 +33,10 @@
 		shell-mode-hook
 		eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
-#+end_src
 
-** Font
-#+begin_src emacs-lisp
 ;; Typefacing/Display
 (set-face-attribute 'default nil :font "Fira Code Retina" :height 100)
-#+end_src
 
-** Performance messaging
-#+begin_src emacs-lisp
 (setq gc-cons-threshold (* 50 1000 1000))
 (add-hook 'emacs-startup-hook
 	  (lambda()
@@ -63,27 +44,15 @@
 		     (format "%.2f seconds"
 			     (float-time
 			      (time-subtract after-init-time before-init-time)))
-		     gcs-done))) 
-#+end_src
+		     gcs-done)))
 
-** File cleanup
-#+begin_src emacs-lisp
 ;; Random file cleanup
 (setq user-emacs-directory "~/.cache/emacs"
       backup-directory-alist `(("." . ,(expand-file-name "backups" user-emacs-directory)))
       auto-save-list-file-prefix (expand-file-name "auto-save-list/.saves-" user-emacs-directory))
 
-#+end_src
-
-** Theme
-#+begin_src emacs-lisp
 (load-theme 'doom-dracula t)
-#+end_src
 
-* Searching
-** Ivy
-*** Base
-#+begin_src emacs-lisp
 (use-package ivy
   :diminish
   :bind (("C-s" . swiper)
@@ -95,26 +64,17 @@
 	 ("C-d" . ivy-reverse-i-search-kill))
   :config
   (ivy-mode 1))
-#+end_src
 
-*** Ivy-Rich
-#+begin_src emacs-lisp
 (use-package ivy-rich
   :init
   (ivy-rich-mode 1))
-#+end_src
 
-** Which Key
-#+begin_src emacs-lisp
 (use-package which-key
   :init (which-key-mode)
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 0.3))
-#+end_src
 
-** Counsel
-#+begin_src emacs-lisp
 (use-package counsel
   :bind (("M-x" . counsel-M-x)
          ("C-x b" . counsel-ibuffer)
@@ -123,10 +83,7 @@
          ("C-r" . 'counsel-minibuffer-history))
   :config
   (setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
-#+end_src
 
-** Helpful
-#+begin_src emacs-lisp
 (use-package helpful
   :custom
   (counsel-describe-function-function #'helpful-callable)
@@ -137,11 +94,6 @@
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
 
-#+end_src
-
-* Doom Stuff
-** Icons
-#+begin_src emacs-lisp
 ;; NOTE: The first time you load your configuration on a new machine, you'll
 ;; need to run the following command interactively so that mode line icons
 ;; display correctly:
@@ -149,20 +101,13 @@
 ;; M-x all-the-icons-install-fonts
 
 (use-package all-the-icons)
-#+end_src
 
-** Doom modeline (bar at bottom)
-#+begin_src emacs-lisp
 (use-package doom-themes)
   (use-package doom-modeline
     :ensure t
     :init (doom-modeline-mode 1)
     :custom (doom-modeline-height 10))
-#+end_src
 
-* Org Mode
-** Base Setup
-#+begin_src emacs-lisp
 ;; Turn on indentation and auto-fill mode for Org files
 (defun cust/org-mode-setup ()
   (org-indent-mode)
@@ -197,10 +142,7 @@ p  :config
 
 ;; Make sure org-indent face is available
 (require 'org-indent)
-#+end_src
 
-** Org Agenda
-#+begin_src emacs-lisp
 (setq org-agenda-files (directory-files-recursively "~/proj/orgfiles" "org"))
 
 
@@ -238,19 +180,11 @@ p  :config
 	  (alltodo "")))
       ("b" "Tasks Owned by Others"
        ((todo "TASK")))))
-#+end_src
 
-** Org-reveal
-#+begin_src emacs-lisp
 (use-package ox-reveal
   :config
   (setq org-reveal-root (concat "file://" (expand-file-name "~") "/proj/reveal.js"))
   (setq org-reveal-title-slide nil))
-#+end_src
-
-** Babel
-*** Load babel languages
-#+begin_src emacs-lisp
 
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -258,24 +192,13 @@ p  :config
    (python . t)
    (shell . t)))
 
-#+end_src
-
-*** Don't Notify Execution
-#+begin_src emacs-lisp
 (setq org-confirm-babel-evaluate nil)
-#+end_src
 
-*** Babel templates
-#+begin_src emacs-lisp
 (require 'org-tempo)
 
 (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
 (add-to-list 'org-structure-template-alist '("py" . "src python"))
-#+end_src
-
-** Tangle
-#+begin_src emacs-lisp
 
 ;; Automatically tangle our init.org config file when we save it
 (defun efs/org-babel-tangle-config ()
@@ -287,45 +210,24 @@ p  :config
 
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
-#+end_src
-
-* Text Editing
-** Delimiters
-#+begin_src emacs-lisp
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
-#+end_src
 
-** Magit
-#+begin_src emacs-lisp
 (use-package magit)
-#+end_src
 
-** Writing/authoring
-#+begin_src emacs-lisp
 (use-package wc-mode
   :ensure t)
 
 (use-package writegood-mode
   :ensure t)
-#+end_src
 
-** Reading
-*** PDF Tools
-#+begin_src emacs-lisp
 (use-package pdf-tools
   :mode ("\\.pdf\\'" . pdf-view-mode))
-#+end_src
 
-** Ledger
-#+begin_src emacs-lisp
 (use-package ledger-mode
   :ensure t
   :mode ("\\.journal\\'" . ledger-mode))
-#+end_src
 
-** Projectile
-#+begin_src emacs-lisp
 (use-package projectile
   :diminish projectile-mode
   :config (projectile-mode)
@@ -339,22 +241,12 @@ p  :config
 (use-package counsel-projectile
   :config (counsel-projectile-mode)
   :after projectile)
-#+end_src
 
-* EXWM
-*** Split EXWM config out in Main
-#+begin_src emacs-lisp
 (setq efs/exwm-enabled (and (eq window-system 'x)))
 ;                            (seq-contains-p command-line-args "--use-exwm")))
 
 (when efs/exwm-enabled
   (load-file "~/.emacs.d/exwm.el"))
-#+end_src
 
-* Misc
-** Command Log Mode
-#+begin_src emacs-lisp
 ;; Use this with M-x global-command-log-mode and clm/toggle-command-log-mode
 (use-package command-log-mode)
-#+end_src
-

@@ -1,3 +1,22 @@
+(expand-file-name "~")
+
+;; Runs a script in the background
+(defun efs/run-in-background (command)
+  (let ((command-parts (split-string command "[ ]+")))
+    (apply #'call-process `(,(car command-parts) nil 0 nil ,@(cdr command-parts)))))
+
+(defun efs/exwm-init-hook ()
+  ;; Make workspace 1 be the one where we land at startup
+  (exwm-workspace-switch-create 1)
+
+;; Open eshell by default
+(eshell)
+
+;; On status bar, add network status
+(efs/run-in-background "nm-applet")
+;; On status bar, add battery status
+(efs/run-in-background "cbatticon"))
+
 (defun efs/exwm-update-class ()
   (exwm-workspace-rename-buffer exwm-class-name))
 
@@ -11,6 +30,9 @@
 
   ;; When running a program in a buffer, set buffer name to program name
   (add-hook 'exwm-update-class-hook #'efs/exwm-update-class)
+  
+  ;; When EXWM loads up, load our init hook from exwm.org
+  (add-hook 'exwm-init-hook #'efs/exwm-init-hook)
 
   ;; These keys escape the EXWM process and get handed to emacs
   (setq exwm-input-prefix-keys
