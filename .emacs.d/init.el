@@ -18,7 +18,7 @@
 
 ;; Window setup
 (use-package desktop)
-(desktop-save-mode 1)
+;;(desktop-save-mode 1)
 (scroll-bar-mode -1)
 (column-number-mode)
 (global-display-line-numbers-mode 1)
@@ -53,6 +53,11 @@
 
 (load-theme 'doom-dracula t)
 
+(set-frame-parameter (selected-frame) 'alpha '(90 . 90))
+(add-to-list 'default-frame-alist '(alpha . (90 . 90)))
+(set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
 (use-package ivy
   :diminish
   :bind (("C-s" . swiper)
@@ -81,6 +86,8 @@
          ("C-x C-f" . counsel-find-file)
          :map minibuffer-local-map
          ("C-r" . 'counsel-minibuffer-history))
+  :custom
+  (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
   :config
   (setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
 

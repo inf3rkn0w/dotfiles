@@ -12,10 +12,25 @@
 ;; Open eshell by default
 (eshell)
 
+;; Show battery status in the mode line
+(display-battery-mode 1)
+
+;; Show date and time in modeline
+(setq display-time-day-and-date t)
+(display-time-mode 1) ;; Note, you can use format-time-string param to config
+
 ;; On status bar, add network status
 (efs/run-in-background "nm-applet")
 ;; On status bar, add battery status
-(efs/run-in-background "cbatticon"))
+;;(efs/run-in-background "cbatticon")
+;; On status bar, add volume
+(efs/run-in-background "pasystray")
+;; On status bar, add bluetooth controls
+(efs/run-in-background "blueman-applet"))
+
+(defun efs/set-wallpaper ()
+  (interactive)
+  (start-process-shell-command "feh" nil "feh --bg-scale /usr/share/backgrounds/qwe_download.jpg"))
 
 (defun efs/exwm-update-class ()
   (exwm-workspace-rename-buffer exwm-class-name))
@@ -34,6 +49,9 @@
   ;; When EXWM loads up, load our init hook from exwm.org
   (add-hook 'exwm-init-hook #'efs/exwm-init-hook)
 
+  ;; Set wallpaper AFTER changing resolution
+  (efs/set-wallpaper)
+
   ;; These keys escape the EXWM process and get handed to emacs
   (setq exwm-input-prefix-keys
 	'(?\C-x
@@ -51,6 +69,7 @@
 
   ;; Give me a system tray!
   (require 'exwm-systemtray)
+  (setq exwm-systemtray-height 16)
   (exwm-systemtray-enable)
 
   ;; These are global EXWM keys to set
@@ -76,6 +95,16 @@
 			(lambda ()
 			  (interactive)
 			  (exwm-workspace-switch-create ,i))))
-		    (number-sequence 0 9)))))
+		    (number-sequence 0 9))))
+  (exwm-input-set-key (kbd "s-SPC") 'counsel-linux-app))
 
 (exwm-enable)
+
+(use-package desktop-environment
+  :after exwm
+  :config (desktop-environment-mode)
+  :custom
+  (desktop-environment-brightness-small-increment "2%+")
+  (desktop-environment-brightness-small-decrement "2%-")
+  (desktop-environment-brightness-normal-increment "5%+")
+  (desktop-environment-brightness-normal-decrement "5%-"))
