@@ -30,7 +30,11 @@ NOTE: Add =--use-exwm= to exwm-enabled function so we can toggle
 #+begin_src shell :tangle ./scripts/start-exwm.sh
 #!/bin/sh
 
+# Run the screen compositor (for background stuff)
 compton &
+
+# Enable screen locking on suspend
+xss-lock -- slock &
 
 exec dbus-launch --exit-with-session emacs -mm --debug-init --use-exwm
 #+end_src
@@ -160,6 +164,16 @@ These scripts are used inside of the exwm config block prior to enabling EXWM.
   (desktop-environment-brightness-small-decrement "2%-")
   (desktop-environment-brightness-normal-increment "5%+")
   (desktop-environment-brightness-normal-decrement "5%-"))
+#+end_src
+
+* Screen locking
+#+begin_src shell
+sudo pacman -S slock xss-lock
+slock # locks screen
+# --> After slock, screen turns black
+# --> Press enter, it turns red
+# --> As you type password, it turns blue
+# --> Hit enter after successful password to unlock or have screen turn red again
 #+end_src
 
 * Cool tools to install

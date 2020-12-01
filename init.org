@@ -89,6 +89,31 @@
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 #+end_src
 
+* File Management
+** Dired
+#+begin_src emacs-lisp
+
+(use-package dired
+  :ensure nil
+  :commands (dired dired-jump)
+  :bind (("C-x C-j" . dired-jump)
+    :map dired-mode-map
+      (("C-b" . dired-up-directory)
+      ("C-f" . dired-find-file)))
+  :custom ((dired-listing-switches "-agho --group-directories-first")))
+
+#+end_src
+*** Dired Notes
+- =m= Marks a file
+- =u= Unmarks a file
+- =U= Unmarks all files
+- =t= Inverts marked files
+- =% m= Marks with regex
+- =*= Gets a list of preset patterns
+- =*/= Marks directories
+- =k= Hides marked lines
+- =g= Restores killed lines
+- =R= Similar to MV (can rename or move)
 * Searching
 ** Ivy
 *** Base
@@ -352,7 +377,61 @@ p  :config
   :after projectile)
 #+end_src
 
-* EXWM
+* Terminal/Shell
+** term-mode
+#+begin_src emacs-lisp
+  (use-package term
+    :config
+    (setq explicit-shell-file-name "bash")
+    ;;(setq explicit-zsh-args '())
+    (setq term-prompt-regexp "^[#$%>\n]*[#$%>] *"))
+  
+  (use-package eterm-256color
+    :hook (term-mode . eterm-256color-mode))
+#+end_src
+
+** vterm
+#+begin_src emacs-lisp
+  (use-package vterm
+    :commands vterm
+    :config
+    (setq vterm-max-scrollback 10000))
+#+end_src
+
+** Use a different shell
+#+begin_src emacs-lisp
+;(setq explicit-shell-file-name "powershell.exe")
+;(setq explicit-powershell.exe-args '())
+#+end_src
+
+** Eshell
+#+begin_src emacs-lisp
+(defun efs/configure-eshell()
+  ;; Save command history when commands are entered
+  (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+
+  ;; Truncate buffer for performance
+  (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+
+  (setq eshell-history-size         10000
+        eshell-buffer-maximum-lines 10000
+        eshell-hist-ignoredups t
+        eshell-scroll-to-bottom-on-input t))
+
+(use-package eshell-git-prompt)
+
+(use-package eshell
+  :hook (eshell-first-time-mode . efs/configure-eshell)
+  :config
+  (with-eval-after-load 'esh-opt
+    (setq eshell-destroy-buffer-when-process-dies t)
+    (setq eshell-visual-commands '("htop","zsh")))
+  ;; Note: Type use-theme in eshell to see different themes
+  (eshell-git-prompt-use-theme 'default))
+#+end_src
+
+* EXWM Stub
+This is the stub for EXWM usage that acts as the gateway between using emacs in a terminal and as a window mode. EXWM requires Xorg and can be toggled manually using =--use-exwm=.
 ** Split EXWM config out in Main
 #+begin_src emacs-lisp
 (setq efs/exwm-enabled (and (eq window-system 'x)

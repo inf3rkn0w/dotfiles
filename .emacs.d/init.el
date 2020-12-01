@@ -58,6 +58,15 @@
 (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
+(use-package dired
+  :ensure nil
+  :commands (dired dired-jump)
+  :bind (("C-x C-j" . dired-jump)
+    :map dired-mode-map
+      (("C-b" . dired-up-directory)
+      ("C-f" . dired-find-file)))
+  :custom ((dired-listing-switches "-agho --group-directories-first")))
+
 (use-package ivy
   :diminish
   :bind (("C-s" . swiper)
@@ -248,6 +257,46 @@ p  :config
 (use-package counsel-projectile
   :config (counsel-projectile-mode)
   :after projectile)
+
+(use-package term
+  :config
+  (setq explicit-shell-file-name "bash")
+  ;;(setq explicit-zsh-args '())
+  (setq term-prompt-regexp "^[#$%>\n]*[#$%>] *"))
+
+(use-package eterm-256color
+  :hook (term-mode . eterm-256color-mode))
+
+(use-package vterm
+  :commands vterm
+  :config
+  (setq vterm-max-scrollback 10000))
+
+;(setq explicit-shell-file-name "powershell.exe")
+;(setq explicit-powershell.exe-args '())
+
+(defun efs/configure-eshell()
+  ;; Save command history when commands are entered
+  (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+
+  ;; Truncate buffer for performance
+  (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+
+  (setq eshell-history-size         10000
+        eshell-buffer-maximum-lines 10000
+        eshell-hist-ignoredups t
+        eshell-scroll-to-bottom-on-input t))
+
+(use-package eshell-git-prompt)
+
+(use-package eshell
+  :hook (eshell-first-time-mode . efs/configure-eshell)
+  :config
+  (with-eval-after-load 'esh-opt
+    (setq eshell-destroy-buffer-when-process-dies t)
+    (setq eshell-visual-commands '("htop","zsh")))
+  ;; Note: Type use-theme in eshell to see different themes
+  (eshell-git-prompt-use-theme 'default))
 
 (setq efs/exwm-enabled (and (eq window-system 'x)
                             (seq-contains-p command-line-args "--use-exwm")))
