@@ -58,14 +58,31 @@
 (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
+;(use-package dired-single)
+
 (use-package dired
   :ensure nil
   :commands (dired dired-jump)
   :bind (("C-x C-j" . dired-jump)
     :map dired-mode-map
+;;      (("C-b" . dired-single-up-directory)
+;;      ("C-f" . dired-single-buffer)))
       (("C-b" . dired-up-directory)
       ("C-f" . dired-find-file)))
   :custom ((dired-listing-switches "-agho --group-directories-first")))
+
+(use-package all-the-icons-dired
+  :hook (dired-mode . all-the-icons-dired-mode))
+
+(use-package dired-open
+  :config
+  (setq dired-open-extensions '(("png" . "feh")
+                                ("mkv" . "mpv"))))
+
+(use-package dired-hide-dotfiles
+  :hook (dired-mode . dired-hide-dotfiles-mode)
+  :bind
+  (")" . dired-hide-dotfiles-mode))
 
 (use-package ivy
   :diminish
@@ -215,6 +232,8 @@ p  :config
 (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
 (add-to-list 'org-structure-template-alist '("py" . "src python"))
+
+(setq org-src-tab-acts-natively t)
 
 ;; Automatically tangle our init.org config file when we save it
 (defun efs/org-babel-tangle-config ()
