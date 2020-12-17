@@ -1,8 +1,6 @@
 #+title Emacs Scratch Config
 #+PROPERTY: header-args:emacs-lisp :tangle ./.emacs.d/init.el :mkdirp yes
 
-* General Setup
-** Package Repos
 
 #+begin_src emacs-lisp
 
@@ -23,7 +21,6 @@
 
 #+end_src
 
-** Window and Environment
 
 #+begin_src emacs-lisp
 (setq inhibit-startup-message t)
@@ -48,13 +45,11 @@
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 #+end_src
 
-** Font
 #+begin_src emacs-lisp
 ;; Typefacing/Display
 (set-face-attribute 'default nil :font "Fira Code Retina" :height 100)
 #+end_src
 
-** Performance messaging
 #+begin_src emacs-lisp
 (setq gc-cons-threshold (* 50 1000 1000))
 (add-hook 'emacs-startup-hook
@@ -66,7 +61,6 @@
 		     gcs-done))) 
 #+end_src
 
-** File cleanup
 #+begin_src emacs-lisp
 ;; Random file cleanup
 (setq user-emacs-directory "~/.cache/emacs"
@@ -75,13 +69,10 @@
 
 #+end_src
 
-** Theme
 #+begin_src emacs-lisp
 (load-theme 'doom-dracula t)
 #+end_src
 
-* Desktop background
-** Alpha the frame
 #+begin_src emacs-lisp
 (set-frame-parameter (selected-frame) 'alpha '(90 . 90))
 (add-to-list 'default-frame-alist '(alpha . (90 . 90)))
@@ -89,9 +80,6 @@
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 #+end_src
 
-* File Management
-** Dired
-*** Dired setup
 #+begin_src emacs-lisp
 
 ;(use-package dired-single)
@@ -110,13 +98,11 @@
 #+end_src
 TODO: Move to a note file outside of config
 
-*** Dired icons
 #+begin_src emacs-lisp
 (use-package all-the-icons-dired
   :hook (dired-mode . all-the-icons-dired-mode))
 #+end_src
 
-*** dired-open
 #+begin_src emacs-lisp
   (use-package dired-open
     :config
@@ -124,16 +110,14 @@ TODO: Move to a note file outside of config
                                   ("mkv" . "mpv"))))
 #+end_src
 
-*** Hide my hidden files on-demand
 #+begin_src emacs-lisp
+;; Note: Need to make this hide/show work only in minor mode
 (use-package dired-hide-dotfiles
-  :hook (dired-mode . dired-hide-dotfiles-mode)
-  :bind
-  (")" . dired-hide-dotfiles-mode))
+  :hook (dired-mode . dired-hide-dotfiles-mode))
+;  :bind
+;  (")" . dired-hide-dotfiles-mode))
 #+end_src
 
-*** Dired Notes
-**** General
 - =m= Marks a file
 - =u= Unmarks a file
 - =U= Unmarks all files
@@ -144,23 +128,19 @@ TODO: Move to a note file outside of config
 - =k= Hides marked lines
 - =g= Restores killed lines
 
-**** Copy/Rename
 - =R= Similar to MV (can rename or move)
 - =c= Copy marked files
 - =% r= Renames with regex
 
-**** Deleting
 - =D= Deletes marked file
 - =d= Mark file for deletion
 - =x= Execute deletion for marks
 - =delete-by-moving-to-trash= Allows restore of delete
 
-**** Archives
 - =Z= Compress a file/folder to =.tar.gz=
 - =c= Compress selection to specific file
 - =dired-compress-files-alist= Binds compression commands to file extension
 
-**** Other
 - =T= Touch (change timestamp)
 - =M= Change file mode
 - =o= Change file owner
@@ -168,9 +148,6 @@ TODO: Move to a note file outside of config
 - =S= Creates symlink
 - =L= load elisp file into emacs
 - =C-x C-q= Allows filename editing directly in buffer
-* Searching
-** Ivy
-*** Base
 #+begin_src emacs-lisp
 (use-package ivy
   :diminish
@@ -185,14 +162,12 @@ TODO: Move to a note file outside of config
   (ivy-mode 1))
 #+end_src
 
-*** Ivy-Rich
 #+begin_src emacs-lisp
 (use-package ivy-rich
   :init
   (ivy-rich-mode 1))
 #+end_src
 
-** Which Key
 #+begin_src emacs-lisp
 (use-package which-key
   :init (which-key-mode)
@@ -201,7 +176,6 @@ TODO: Move to a note file outside of config
   (setq which-key-idle-delay 0.3))
 #+end_src
 
-** Counsel
 #+begin_src emacs-lisp
 (use-package counsel
   :bind (("M-x" . counsel-M-x)
@@ -215,7 +189,6 @@ TODO: Move to a note file outside of config
   (setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
 #+end_src
 
-** Helpful
 #+begin_src emacs-lisp
 (use-package helpful
   :custom
@@ -229,8 +202,6 @@ TODO: Move to a note file outside of config
 
 #+end_src
 
-* Doom Stuff
-** Icons
 #+begin_src emacs-lisp
 ;; NOTE: The first time you load your configuration on a new machine, you'll
 ;; need to run the following command interactively so that mode line icons
@@ -241,7 +212,6 @@ TODO: Move to a note file outside of config
 (use-package all-the-icons)
 #+end_src
 
-** Doom modeline (bar at bottom)
 #+begin_src emacs-lisp
 (use-package doom-themes)
   (use-package doom-modeline
@@ -250,8 +220,6 @@ TODO: Move to a note file outside of config
     :custom (doom-modeline-height 10))
 #+end_src
 
-* Org Mode
-** Base Setup
 #+begin_src emacs-lisp
 ;; Turn on indentation and auto-fill mode for Org files
 (defun cust/org-mode-setup ()
@@ -289,7 +257,6 @@ p  :config
 (require 'org-indent)
 #+end_src
 
-** Org Agenda
 #+begin_src emacs-lisp
 (setq org-agenda-files (directory-files-recursively "~/proj/orgfiles" "org"))
 
@@ -330,7 +297,6 @@ p  :config
        ((todo "TASK")))))
 #+end_src
 
-** Org-reveal
 #+begin_src emacs-lisp
 (use-package ox-reveal
   :config
@@ -338,8 +304,6 @@ p  :config
   (setq org-reveal-title-slide nil))
 #+end_src
 
-** Babel
-*** Load babel languages
 #+begin_src emacs-lisp
 
 (org-babel-do-load-languages
@@ -350,12 +314,10 @@ p  :config
 
 #+end_src
 
-*** Don't Notify Execution
 #+begin_src emacs-lisp
 (setq org-confirm-babel-evaluate nil)
 #+end_src
 
-*** Babel templates
 #+begin_src emacs-lisp
 (require 'org-tempo)
 
@@ -364,12 +326,10 @@ p  :config
 (add-to-list 'org-structure-template-alist '("py" . "src python"))
 #+end_src
 
-*** Treat code like code
 #+begin_src emacs-lisp
 (setq org-src-tab-acts-natively t)
 #+end_src
 
-** Tangle
 #+begin_src emacs-lisp
 
 ;; Automatically tangle our init.org config file when we save it
@@ -384,19 +344,15 @@ p  :config
 
 #+end_src
 
-* Text Editing
-** Delimiters
 #+begin_src emacs-lisp
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 #+end_src
 
-** Magit
 #+begin_src emacs-lisp
 (use-package magit)
 #+end_src
 
-** Writing/authoring
 #+begin_src emacs-lisp
 (use-package wc-mode
   :ensure t)
@@ -405,21 +361,17 @@ p  :config
   :ensure t)
 #+end_src
 
-** Reading
-*** PDF Tools
 #+begin_src emacs-lisp
 (use-package pdf-tools
   :mode ("\\.pdf\\'" . pdf-view-mode))
 #+end_src
 
-** Ledger
 #+begin_src emacs-lisp
 (use-package ledger-mode
   :ensure t
   :mode ("\\.journal\\'" . ledger-mode))
 #+end_src
 
-** Projectile
 #+begin_src emacs-lisp
 (use-package projectile
   :diminish projectile-mode
@@ -436,8 +388,6 @@ p  :config
   :after projectile)
 #+end_src
 
-* Terminal/Shell
-** term-mode
 #+begin_src emacs-lisp
   (use-package term
     :config
@@ -449,7 +399,6 @@ p  :config
     :hook (term-mode . eterm-256color-mode))
 #+end_src
 
-** vterm
 #+begin_src emacs-lisp
   (use-package vterm
     :commands vterm
@@ -457,13 +406,11 @@ p  :config
     (setq vterm-max-scrollback 10000))
 #+end_src
 
-** Use a different shell
 #+begin_src emacs-lisp
 ;(setq explicit-shell-file-name "powershell.exe")
 ;(setq explicit-powershell.exe-args '())
 #+end_src
 
-** Eshell
 #+begin_src emacs-lisp
 (defun efs/configure-eshell()
   ;; Save command history when commands are entered
@@ -489,9 +436,7 @@ p  :config
   (eshell-git-prompt-use-theme 'default))
 #+end_src
 
-* EXWM Stub
 This is the stub for EXWM usage that acts as the gateway between using emacs in a terminal and as a window mode. EXWM requires Xorg and can be toggled manually using =--use-exwm=.
-** Split EXWM config out in Main
 #+begin_src emacs-lisp
 (setq efs/exwm-enabled (and (eq window-system 'x)
                             (seq-contains-p command-line-args "--use-exwm")))
@@ -500,8 +445,6 @@ This is the stub for EXWM usage that acts as the gateway between using emacs in 
   (load-file "~/.emacs.d/exwm.el"))
 #+end_src
 
-* Misc
-** Command Log Mode
 #+begin_src emacs-lisp
 ;; Use this with M-x global-command-log-mode and clm/toggle-command-log-mode
 (use-package command-log-mode)

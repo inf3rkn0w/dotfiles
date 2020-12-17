@@ -79,10 +79,11 @@
   (setq dired-open-extensions '(("png" . "feh")
                                 ("mkv" . "mpv"))))
 
+;; Note: Need to make this hide/show work only in minor mode
 (use-package dired-hide-dotfiles
-  :hook (dired-mode . dired-hide-dotfiles-mode)
-  :bind
-  (")" . dired-hide-dotfiles-mode))
+  :hook (dired-mode . dired-hide-dotfiles-mode))
+;  :bind
+;  (")" . dired-hide-dotfiles-mode))
 
 (use-package ivy
   :diminish
