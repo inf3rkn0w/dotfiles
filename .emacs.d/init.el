@@ -264,6 +264,14 @@ p  :config
   :ensure t
   :mode ("\\.journal\\'" . ledger-mode))
 
+;; git clone git@github.com:beancount/beancount-mode
+(add-to-list 'load-path "~/proj/beancount-mode/")
+(require 'beancount)
+(add-to-list 'auto-mode-alist '("\\.beancount\\'" . beancount-mode))
+(add-hook 'beancount-mode-hook
+  (lambda () (setq-local electric-indent-chars nil))
+(add-hook 'beancount-mode-hook #'outline-minor-mode)
+
 (use-package projectile
   :diminish projectile-mode
   :config (projectile-mode)
